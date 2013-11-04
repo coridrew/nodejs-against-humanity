@@ -86,7 +86,6 @@ function black() {
     "What's the most emo?",
     "What's the new fad diet?",
     "What's the next Happy Meal toy?",
-    "What's the next superhero/sidekick duo?",
     "What's there a ton of in heaven?",
     "When I am President of the United States, I will create the Department of __________.",
     "When I am a billionaire, I shall erect a 50-foot statue to commemorate __________.",
