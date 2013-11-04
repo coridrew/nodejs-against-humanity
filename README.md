@@ -45,9 +45,9 @@ After you confirm your email, you can login (the `confirm` command should prompt
 Change the `subdomain` value in `package.json`, to reflect the url you want to deploy to:
 
     {
-      "name": "word-finder",
+      "name": "nodejs-against-humanity",
       [...],
-      "subdomain": "word-finder" <--- this value
+      "subdomain": "nah-amir-rajan" <--- this value
     }
 
 now deploy:
