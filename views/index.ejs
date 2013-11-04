@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="utf-8">
+    <title>NodeJS Against Humanity</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="/public/jquery.js" type="text/javascript"></script>
+    <script src="/public/jqueryCookie.js" type="text/javascript"></script>
+    <script src="/public/jqueryTmpl.js" type="text/javascript"></script>
+    <script src="/public/underscore.js" type="text/javascript"></script>
+    <script src="/public/js/bootstrap-collapse.js" type="text/javascript"></script>
+
+    <!-- Le styles -->
+    <link href="/public/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="/public/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          
+          <a class="brand">NodeJS Against Humanity</a>
+          
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="javascript:createGame();">Create Game</a></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.0/">
+          <img alt="Creative Commons License" style="display: block; margin-left: auto; margin-right: auto;" src="http://i.creativecommons.org/l/by-nc-sa/2.0/88x31.png" /></a>
+          <br />
+          This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.0/">Creative Commons Attribution-NonCommercial-ShareAlike 2.0 Generic License</a>.
+          <br />
+          This site is not affliated in any way with the official Cards Against Humanities.
+      </div>
+      <hr />
+      <div class="row">
+        Cards Against Humanity written in NodeJS. You need 4 players for a game to start. <a href="https://github.com/amirrajan/nodejs-against-humanity">The source is here. I accept pull requests.</a>.
+      </div>
+      <hr />
+      <h3>Click below to join a game (or use the Create Game link at the top to start one)</h3>
+      <hr />
+      <div class="row" id="availableGames">
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var playerId = GUID();
+    var gameId = GUID();
+    $(document).ready(function() {
+      PollForGames();
+    });
+
+    function PollForGames() {
+      $('#availableGames').html('');
+      GetGames();
+      setTimeout(PollForGames, 5000);   
+    }
+
+    function GetGames(){
+      var gameTemplate = '<div class="well well-small" style="font-size: 16px"> <a href="javascript:;" data-gameId="${gameId}">${name} - players: ${players} of 4</a> </div>';
+
+      $.getJSON("list", function(games) {
+        if(games.length == 0) {
+          $("#availableGames").append("<div style='font-weight: bold'>no open games... use the Create Game link at the top to start one.</div>");
+        } else {
+          jQuery.each(games, function(game) {
+            var gameElement = $.tmpl(gameTemplate, {
+              gameId: games[game].id,
+              name: games[game].name,
+              players: games[game].players
+            });
+
+            $(gameElement).click(function() {
+              var name = prompt("what's your name?", "anonymous " + S4());
+              if (name.replace(/\s/g, "").length == 0) {
+                name = "anonymous";
+              }
+
+              var gameId = $(gameElement).find('a').attr('data-gameId');
+              $.post("joingame", { gameId: gameId, playerId: playerId, playerName: name }, function() {
+                window.location.replace("/game?gameId=" + gameId + "&playerId=" + playerId);
+              });
+            });
+
+            $('#availableGames').append(gameElement);
+          });
+        }
+
+      });
+    }
+
+    function createGame() {
+      var name = prompt("what's your name?", "anonymous " + S4());
+      if (name.replace(/\s/g, "").length == 0) {
+        name = "anonymous";
+      }
+
+      $.post("add", { id: gameId, name: name + "'s game" }, function() {
+        $.post("joingame", { gameId: gameId, playerId: playerId, playerName: name }, function() { 
+          window.location.replace("/game?gameId=" + gameId + "&playerId=" + playerId);
+        });
+      });
+    };
+
+    function S4() {
+      return Math.floor(Math.random() * 0x10000).toString();
+    }
+
+    function GUID(){
+      return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
+    };
+
+  </script>
+</html>
+
+
