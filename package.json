@@ -21,7 +21,7 @@
     "oauth": "~0.9.10",
     "redis": "~0.8.4",
     "redis-url": "0.1.0",
-    "request": "~2.27.0"
+    "request": "~2.88.0"
   },
   "subdomain": "nah-amir-rajan",
   "engines": {
